@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#07151d" />
+    <meta name="description" content="LogSentry is a local-first authentication log analyzer for spotting suspicious login bursts." />
+    <title>LogSentry — Authentication signal, clarified.</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#top" aria-label="LogSentry home">
+          <span class="brand-mark" aria-hidden="true"><span></span></span>
+          <span>LOG<span class="brand-accent">SENTRY</span></span>
+        </a>
+        <div class="topbar-meta">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span>LOCAL ANALYSIS</span>
+          <span class="topbar-divider"></span>
+          <span id="clock">--:--:-- UTC</span>
+        </div>
+      </header>
+
+      <main id="top">
+        <section class="hero">
+          <div class="hero-copy">
+            <p class="eyebrow">DEFENSIVE SECURITY TOOLKIT / 01</p>
+            <h1>See the signal<br /><em>inside the noise.</em></h1>
+            <p class="hero-lede">A private, browser-based way to find repeated authentication failures before they become an incident.</p>
+            <div class="hero-tags" aria-label="Product qualities">
+              <span>NO UPLOADS</span>
+              <span>OPEN FORMAT</span>
+              <span>DOCKER READY</span>
+            </div>
+          </div>
+          <div class="hero-orbit" aria-hidden="true">
+            <div class="orbit-ring orbit-ring-one"></div>
+            <div class="orbit-ring orbit-ring-two"></div>
+            <div class="orbit-core"><span class="core-pulse"></span><span>LS</span></div>
+            <span class="orbit-label orbit-label-top">AUTH / 401</span>
+            <span class="orbit-label orbit-label-right">LOCAL</span>
+            <span class="orbit-label orbit-label-bottom">0 EXTERNAL CALLS</span>
+          </div>
+        </section>
+
+        <section class="workspace-grid" aria-label="Log analysis workspace">
+          <div class="panel source-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="panel-kicker">01 / SOURCE</p>
+                <h2>Bring a log into focus</h2>
+              </div>
+              <span class="panel-index">INPUT</span>
+            </div>
+            <p class="panel-intro">Drop a Common or Combined Log Format file here. Processing stays in this browser.</p>
+            <label class="drop-zone" id="dropZone" for="fileInput" tabindex="0">
+              <input id="fileInput" type="file" accept=".log,.txt,text/plain" />
+              <span class="upload-glyph" aria-hidden="true">↑</span>
+              <strong>Drop access.log here</strong>
+              <span>or <u>choose a file</u> from your computer</span>
+              <small id="fileName">No file selected</small>
+            </label>
+            <div class="source-actions">
+              <button class="button button-secondary" id="sampleButton" type="button"><span>▣</span> Load sample</button>
+              <button class="text-button" id="clearButton" type="button">Clear source</button>
+            </div>
+            <label class="textarea-label" for="logInput">Or paste log lines</label>
+            <textarea id="logInput" spellcheck="false" placeholder="192.0.2.10 - - [13/Nov/2026:09:00:00 +0000] &quot;POST /login HTTP/1.1&quot; 401 120"></textarea>
+          </div>
+
+          <div class="panel controls-panel">
+            <div class="panel-heading">
+              <div>
+                <p class="panel-kicker">02 / LENS</p>
+                <h2>Set your detection lens</h2>
+              </div>
+              <span class="panel-index">RULES</span>
+            </div>
+            <p class="panel-intro">Tune the signal for the traffic pattern you expect. Start with the defaults.</p>
+            <div class="control-row">
+              <label for="threshold">Failure threshold <span>attempts</span></label>
+              <input id="threshold" type="number" min="1" max="999" value="5" />
+            </div>
+            <div class="control-row">
+              <label for="windowMinutes">Rolling window <span>minutes</span></label>
+              <input id="windowMinutes" type="number" min="1" max="1440" value="10" />
+            </div>
+            <div class="rule-note"><span class="note-icon">i</span><span>Sources are flagged when failed auth responses (401/403) reach the threshold within the rolling window.</span></div>
+            <button class="button button-primary analyze-button" id="analyzeButton" type="button"><span>Analyze source</span><b>→</b></button>
+            <p class="privacy-note"><span aria-hidden="true">⌁</span> Your log never leaves this tab.</p>
+          </div>
+        </section>
+
+        <section class="results-section" id="results" aria-live="polite">
+          <div class="results-heading">
+            <div>
+              <p class="panel-kicker">03 / SIGNAL REPORT</p>
+              <h2>What needs your attention?</h2>
+            </div>
+            <div class="results-actions">
+              <span id="reportStatus" class="report-status">Waiting for a source</span>
+              <button class="button button-secondary" id="downloadButton" type="button" disabled>↓ Export JSON</button>
+            </div>
+          </div>
+
+          <div class="metric-grid">
+            <article class="metric-card metric-card-highlight"><span>FLAGGED SOURCES</span><strong id="flaggedSources">—</strong><small id="flaggedHint">Run an analysis to see alerts</small></article>
+            <article class="metric-card"><span>AUTH FAILURES</span><strong id="authFailures">—</strong><small id="authHint">401 + 403 responses</small></article>
+            <article class="metric-card"><span>PARSED LINES</span><strong id="parsedLines">—</strong><small id="parsedHint">Common / Combined format</small></article>
+            <article class="metric-card"><span>WINDOW</span><strong id="windowSummary">—</strong><small>Rolling detection lens</small></article>
+          </div>
+
+          <div class="report-layout">
+            <div class="alerts-panel panel">
+              <div class="subpanel-heading"><h3>Priority queue</h3><span id="alertCount">0 alerts</span></div>
+              <div class="alerts-list" id="alertsList">
+                <div class="empty-state"><span class="empty-cross">＋</span><strong>No signals yet</strong><p>Load the sample or add your own authorized log to generate a report.</p></div>
+              </div>
+            </div>
+            <div class="method-panel panel">
+              <div class="subpanel-heading"><h3>How to read this</h3><span>HEURISTIC</span></div>
+              <div class="method-steps">
+                <div><span>01</span><p><strong>Parse</strong> Each valid access line is normalized into a timestamp, source IP, path, and status.</p></div>
+                <div><span>02</span><p><strong>Filter</strong> Only likely authentication paths with 401 or 403 responses become failures.</p></div>
+                <div><span>03</span><p><strong>Flag</strong> A rolling window surfaces sources that cross your chosen threshold.</p></div>
+              </div>
+              <p class="method-disclaimer">A flag is a lead for investigation, not proof of compromise. Shared networks, proxies, and real user mistakes can create noise.</p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div><span class="footer-mark">LS</span><span>LOGSENTRY / PROJECT ONE</span></div>
+        <span>Built for authorized, local analysis.</span>
+        <a href="https://github.com/" aria-label="Open GitHub">GITHUB ↗</a>
+      </footer>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
